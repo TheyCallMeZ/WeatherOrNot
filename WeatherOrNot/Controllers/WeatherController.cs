@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using WeatherOrNot.Logic.Factory;
+using WeatherOrNot.Logic.Model;
 
 namespace WeatherOrNot.Controllers
 {
@@ -49,6 +50,15 @@ namespace WeatherOrNot.Controllers
             var observation = await _wf.GetObservationByStationId(stationId, useCache);
 
             return Ok(JsonSerializer.Serialize(observation));
+        }
+
+        [HttpGet]
+        [Route("GetForecastByZipCode")]
+        public async Task<IActionResult> GetForecastByZipCode(string zipCode, bool useCache = true)
+        {
+            var currently = await _wf.GetForecastByZipCode(zipCode, useCache);
+
+            return Ok(JsonSerializer.Serialize(currently));
         }
     }
 }

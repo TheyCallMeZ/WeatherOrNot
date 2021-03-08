@@ -15,6 +15,7 @@ namespace WeatherOrNot.Logic.Factory
     {
         Task<wx_station_index> GetObservationIndex(bool useCache = true);
         Task<current_observation> GetObservationByStationId(string observationCode, bool useCache = true);
+        Task<CurrentForecast> GetForecastByZipCode(string zipCode, bool useCache = true);
     }
 
     public class WeatherFactory : IWeatherFactory
@@ -119,5 +120,27 @@ namespace WeatherOrNot.Logic.Factory
 
             return observation;
         }
+
+        public async Task<CurrentForecast> GetForecastByZipCode(string zipCode, bool useCache = true)
+        {
+            
+            //build payload
+
+            var data = new Dictionary<string, string>();
+            data.Add("inputstring", zipCode);
+            var payload = new FormUrlEncodedContent(data);
+
+            //Clear Headers to ensure we only send any specific header once
+            _client.DefaultRequestHeaders.Clear();
+            _client.DefaultRequestHeaders.Add("User-Agent", "Other");
+
+            //post
+            var resp = await _client.PostAsync("https://forecast.weather.gov/zipcity.php ", payload);
+
+            var currently = new CurrentForecast(await resp.Content.ReadAsStringAsync());
+
+            return currently;
+        }
+
     }
 }
