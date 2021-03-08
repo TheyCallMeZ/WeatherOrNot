@@ -63,9 +63,24 @@ namespace WeatherOrNot.Logic.Model
             //Loop through the long table to get the extended forecast text
             foreach (var longDesc in html.DocumentNode.CssSelect("div#detailed-forecast-body div.row-forecast").ToArray())
             {
-                    var exForecast = extendedForecast.First(ef =>
-                        ef.periodName == longDesc.CssSelect("div.forecast-label").ToArray()[0].InnerText);
+                //Parse through to find all elements in the table of Long description extended forecast information
+                var exForecast = extendedForecast.FirstOrDefault(ef =>
+                    ef.periodName == longDesc.CssSelect("div.forecast-label").ToArray()[0].InnerText);
+                    
+                if (exForecast != null)
+                {
                     exForecast.longDescrition = longDesc.CssSelect("div.forecast-text").ToArray()[0].InnerText;
+                }
+                else //Occasionally, there will be more extended information (Days) in the table than there are "Tombstones", we handle it gracefully here
+                {
+                    exForecast = new ExtendedForecast
+                    {
+                        periodName = longDesc.CssSelect("div.forecast-label").ToArray()[0].InnerText,
+                        longDescrition = longDesc.CssSelect("div.forecast-text").ToArray()[0].InnerText
+                    };
+                    
+                    extendedForecast.Add(exForecast);
+                }
             }
             
         }
