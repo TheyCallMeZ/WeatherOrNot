@@ -9,6 +9,7 @@ This was a sample project to show parsing xml and returning as more api friendly
 
 ### Update 3/7/2021
 Added a new endpoint to post to weather.gov search by zip code that scrapes the data from the html returned into a nice json format.
+Additional update, now scraping extended forecast information.
 
 
 

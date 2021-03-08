@@ -121,9 +121,21 @@ namespace WeatherOrNot.Logic.Factory
             return observation;
         }
 
+        /// <summary>
+        /// Retrieves weather forecast scraped from weather.gov
+        /// </summary>
+        /// <param name="zipCode">zip code you wish to get a forecast for</param>
+        /// <param name="useCache">boolean parameter to force a fresh grab rather than a cached version</param>
+        /// <returns></returns>
         public async Task<CurrentForecast> GetForecastByZipCode(string zipCode, bool useCache = true)
         {
-            
+            CurrentForecast forecast;
+
+            //Return the cached version if we did not specify a force refresh AND if the cache exists
+            if (useCache && _cache.TryGetValue($"cachedForecast-{zipCode}", out forecast))
+            {
+                return forecast;
+            }
             //build payload
 
             var data = new Dictionary<string, string>();
@@ -137,9 +149,13 @@ namespace WeatherOrNot.Logic.Factory
             //post
             var resp = await _client.PostAsync("https://forecast.weather.gov/zipcity.php ", payload);
 
-            var currently = new CurrentForecast(await resp.Content.ReadAsStringAsync());
+            forecast = new CurrentForecast(await resp.Content.ReadAsStringAsync());
 
-            return currently;
+
+            //save our object in our cache so we aren't hitting the main web service more than once per hour if we need to.
+            _cache.Set($"cachedForecast-{zipCode}", forecast, TimeSpan.FromHours(1));
+
+            return forecast;
         }
 
     }

@@ -52,6 +52,12 @@ namespace WeatherOrNot.Controllers
             return Ok(JsonSerializer.Serialize(observation));
         }
 
+        /// <summary>
+        /// Returns weather forecast for the zip code provided
+        /// </summary>
+        /// <param name="zipCode">5 digit zip code for the area you want weather for</param>
+        /// <param name="useCache">boolean parameter to force a fresh grab rather than a cached version</param>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetForecastByZipCode")]
         public async Task<IActionResult> GetForecastByZipCode(string zipCode, bool useCache = true)
