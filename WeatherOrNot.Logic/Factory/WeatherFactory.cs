@@ -123,7 +123,13 @@ namespace WeatherOrNot.Logic.Factory
 
         public async Task<CurrentForecast> GetForecastByZipCode(string zipCode, bool useCache = true)
         {
-            
+            CurrentForecast forecast;
+
+            //Return the cached version if we did not specify a force refresh AND if the cache exists
+            if (useCache && _cache.TryGetValue($"cachedForecast-{zipCode}", out forecast))
+            {
+                return forecast;
+            }
             //build payload
 
             var data = new Dictionary<string, string>();
@@ -137,9 +143,13 @@ namespace WeatherOrNot.Logic.Factory
             //post
             var resp = await _client.PostAsync("https://forecast.weather.gov/zipcity.php ", payload);
 
-            var currently = new CurrentForecast(await resp.Content.ReadAsStringAsync());
+            forecast = new CurrentForecast(await resp.Content.ReadAsStringAsync());
 
-            return currently;
+
+            //save our object in our cache so we aren't hitting the main web service more than once per hour if we need to.
+            _cache.Set($"cachedForecast-{zipCode}", forecast, TimeSpan.FromHours(1));
+
+            return forecast;
         }
 
     }
