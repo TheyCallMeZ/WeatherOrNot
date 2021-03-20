@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["WeatherOrNot/WeatherOrNot.csproj", "WeatherOrNot/"]
+COPY ["WeatherOrNot.Logic/WeatherOrNot.Logic.csproj", "WeatherOrNot.Logic/"]
 RUN dotnet restore "WeatherOrNot/WeatherOrNot.csproj"
 COPY . .
 WORKDIR "/src/WeatherOrNot"

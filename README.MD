@@ -7,10 +7,12 @@ In walks the National Weather Service from good ol' Weather.gov!
 
 This was a sample project to show parsing xml and returning as more api friendly json. I take no responsibility for what you do with this code. 
 
+### Update 3/20/2021 
+Working Dockerfile, due to the fact that the application is split out into two projects, docker build must be called from the solution directory 
+Still troubleshooting why HTTPS returns an empty response
+
+> ex:\\ docker build . -f .\WeatherOrNot\Dockerfile
+
 ### Update 3/7/2021
 Added a new endpoint to post to weather.gov search by zip code that scrapes the data from the html returned into a nice json format.
 Additional update, now scraping extended forecast information.
-
-
-
-
